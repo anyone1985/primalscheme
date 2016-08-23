@@ -1,0 +1,7 @@
+biopython==1.67
+Cython==0.24.1
+Django==1.10
+django-bootstrap3==7.0.1
+gunicorn==19.6.0
+numpy==1.11.1
+primer3-py==0.5.1
