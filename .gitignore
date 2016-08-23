@@ -2,3 +2,5 @@
 *.sublime-workspace
 *.pyc
 *.sqlite3
+primalscheme
+uploads/

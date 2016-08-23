@@ -1,0 +1,26 @@
+{% extends 'home/base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-12">
+        <h1>Primal Scheme</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        {% bootstrap_messages %}
+        <form action="?" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% bootstrap_form job_form %}
+          {% buttons %}
+            <button type="submit" class="btn btn-primary">
+              Submit
+            </button>
+          {% endbuttons %}
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,5 +1,56 @@
-from django.shortcuts import render
+import csv
+from django.http import HttpResponse
+from django.contrib import messages
+from django.shortcuts import redirect, render, get_object_or_404
+
+from .forms import JobForm
+from .models import Job
 
 
-def new_run(request):
-    return render(request, 'home/new_run.html')
+def new_job(request):
+    if request.method == 'POST':
+        job_form = JobForm(request.POST, request.FILES)
+        if job_form.is_valid():
+            job = job_form.save()
+            job.run()
+            return redirect(job)
+    else:
+        job_form = JobForm
+    return render(request, 'home/new_job.html', {'job_form': job_form})
+
+
+def job_results(request, job_id):
+    job = get_object_or_404(Job, pk=job_id)
+    return render(request, 'home/job_results.html', {'job': job})
+
+
+def job_results_csv(request, job_id):
+
+    def format_row(primer):
+        return [
+            primer.name,
+            primer.sequence,
+            str(primer.length),
+            '{0:.2f}'.format(primer.tm),
+            '{0:.2f}'.format(primer.gc),
+            str(primer.start),
+            str(primer.end)
+        ]
+
+    job = get_object_or_404(Job, pk=job_id)
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="primers.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Primer Name', 'Sequence', 'Length', 'Tm', 'GC%',
+                     'Start', 'End'])
+
+    for region in job.region_set.all():
+        l = region.top_pair.primer_left
+        r = region.top_pair.primer_right
+        writer.writerow(format_row(l))
+        writer.writerow(format_row(r))
+
+    return response
