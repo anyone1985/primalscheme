@@ -1,7 +1,8 @@
 import csv
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
 
 from .forms import JobForm
 from .models import Job
@@ -13,9 +14,15 @@ def new_job(request):
         if job_form.is_valid():
             job = job_form.save()
             job.run()
-            return redirect(job)
+            redirect_url = reverse('home:job_results',
+                                   kwargs={'job_id': str(job.id)})
+            if request.is_ajax():
+                return JsonResponse({'redirect_url': redirect_url})
+            else:
+                return redirect(job)
+
     else:
-        job_form = JobForm
+        job_form = JobForm(initial={'amplicon_length': 400, 'overlap': 75})
     return render(request, 'home/new_job.html', {'job_form': job_form})
 
 

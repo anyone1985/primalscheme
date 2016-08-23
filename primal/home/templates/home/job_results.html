@@ -14,7 +14,7 @@
       <div class="col-md-12">
         <div class="panel panel-default">
           <div class="panel-body">
-            <a href="{% url 'home:job_results_csv' }" class="btn btn-success pull-right">
+            <a href="{% url 'home:job_results_csv' job_id=job.id %}" class="btn btn-success pull-right">
               <i class="fa fa-download"></i> Download as CSV
             </a>
 
@@ -34,7 +34,7 @@
 
         <ul class="nav nav-pills">
           <li class="active"><a data-toggle="pill" href="#primer_table">Primer Table</a></li>
-          <li><a data-toggle="pill" href="#visualisation">Scheme Visualisation</a></li>
+          {# <li><a data-toggle="pill" href="#visualisation">Scheme Visualisation</a></li> #}
         </ul>
 
         <div class="tab-content">
@@ -65,37 +65,7 @@
           </div>
 
           <div id="visualisation" class="tab-pane fade">
-            <script language="javascript" src="//www.biodalliance.org/release-0.13/dalliance-compiled.js"></script>
-            <script language="javascript">
-              new Browser({
-                chr:          '22',
-                viewStart:    30700000,
-                viewEnd:      30900000,
-
-                
-
-                sources:     [{name:                 'Genome',
-                               twoBitURI:            '//www.biodalliance.org/datasets/hg19.2bit',
-                               tier_type:            'sequence'},
-                              {name:                 'Genes',
-                               desc:                 'Gene structures from GENCODE 19',
-                               bwgURI:               '//www.biodalliance.org/datasets/gencode.bb',
-                               stylesheet_uri:       '//www.biodalliance.org/stylesheets/gencode.xml',
-                               collapseSuperGroups:  true,
-                               trixURI:              '//www.biodalliance.org/datasets/geneIndex.ix'},
-                              {name:                 'Repeats',
-                               desc:                 'Repeat annotation from Ensembl',
-                               bwgURI:               '//www.biodalliance.org/datasets/repeats.bb',
-                               stylesheet_uri:       '//www.biodalliance.org/stylesheets/bb-repeats.xml'},
-                              {name:                 'Conservation',
-                               desc:                 'Conservation', 
-                               bwgURI:               '//www.biodalliance.org/datasets/phastCons46way.bw',
-                               noDownsample:         true}],
-
-              });
-            </script>
-
-            <div id="svgHolder"></div>
+        
           </div>
         </div>
 

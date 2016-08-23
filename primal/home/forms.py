@@ -10,4 +10,5 @@ class JobForm(ModelForm):
             'request_time',
             'run_start_time',
             'run_finish_time',
-            'run_duration')
+            'run_duration',
+            'results_path')

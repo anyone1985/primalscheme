@@ -6,3 +6,8 @@ h1 {
   font-family: 'Rock Salt', cursive;
   margin: 30px;
 }
+
+.navbar-brand {
+  font-family: 'Rock Salt', cursive;
+  color: #fff;
+}

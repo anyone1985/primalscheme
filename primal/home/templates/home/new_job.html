@@ -1,26 +1,91 @@
 {% extends 'home/base.html' %}
-{% load bootstrap3 %}
+{% load bootstrap3 static %}
 
 {% block content %}
-  <div class="container">
-    <div class="row text-center">
-      <div class="col-md-12">
-        <h1>Primal Scheme</h1>
-      </div>
-    </div>
+
+  <div class="container" id="scheme_generator">
+
     <div class="row">
-      <div class="col-md-6 col-md-offset-3">
-        {% bootstrap_messages %}
-        <form action="?" method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          {% bootstrap_form job_form %}
-          {% buttons %}
-            <button type="submit" class="btn btn-primary">
-              Submit
-            </button>
-          {% endbuttons %}
-        </form>
+
+      <div class="col-md-5">
+        <h1>Primal Scheme</h1>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            {% bootstrap_messages %}
+            <form action="/" method="post" enctype="multipart/form-data" id="job_form">
+              {% csrf_token %}
+              {% bootstrap_form job_form %}
+              {% buttons %}
+                <div class="text-center">
+                  <button type="submit" class="btn btn-success btn-lg">
+                    Make my scheme!
+                  </button>
+                </div>
+              {% endbuttons %}
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-md-offset-1">
+        <h1>Readme</h1>
+        {% include 'home/includes/readme.html' %}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Progress Modal -->
+  <div id="progress_modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <i class="fa fa-spinner fa-pulse fa-4x fa-fw"></i>
+          <h3>Please wait...</h3>
+          <p>Primal is generating your scheme! This can take up to a minute.</p>
+          <p class="text-danger"><strong>Please do not close your browser or leave this page.</strong></p>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Success Modal -->
+  <div id="success_modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header text-center text-success">
+          <i class="fa fa-check-circle fa-4x"></i>
+          <h3>Success!</h3>
+        </div>
+        <div class="modal-body">
+          <p class="text-center"><strong>Please wait a moment while we load your results.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Errors Modal -->
+  <div id="errors_modal" class="modal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header text-center text-danger">
+          <i class="fa fa-exclamation-triangle fa-4x"></i>
+          <h3>An error has occurred</h3>
+        </div>
+        <div class="modal-body">
+          <p>An unexpected error has occurred.</p>
+          <ul id="form_error_list" class="text-danger"></ul>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'home/js/ajax_forms.js' %}"></script>
+  <script src="{% static 'home/js/primal.js' %}"></script>
 {% endblock %}

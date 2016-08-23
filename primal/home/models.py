@@ -14,11 +14,12 @@ from argparse import Namespace
 
 
 class Job(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Scheme name')
     email = models.EmailField()
     # file will be saved to MEDIA_ROOT/uploads/2015/01/30
     fasta = models.FileField(upload_to='uploads/%Y/%m/%d/')
-    output_prefix = models.CharField(max_length=50)
     amplicon_length = models.PositiveSmallIntegerField(
         validators=[MaxValueValidator(4000)])
     overlap = models.PositiveSmallIntegerField(
@@ -27,7 +28,7 @@ class Job(models.Model):
     run_start_time = models.DateTimeField(null=True)
     run_finish_time = models.DateTimeField(null=True)
     run_duration = models.DurationField(null=True)
-    results_path = models.CharField(max_length=255)
+    results_path = models.CharField(max_length=255, null=True)
 
     def get_absolute_url(self):
         from django.urls import reverse
@@ -35,18 +36,17 @@ class Job(models.Model):
 
     def make_results_dir(self):
         self.results_path = os.path.join(
-            settings.MEDIA_ROOT, '/results/%i' % self.id)
-        os.mkdir(self.results_path)
-
-    def save(self, *args, **kwargs):
-        self.make_results_dir(self)
-        super(Job, self).save(*args, **kwargs)  # Call the "real" save() method
+            settings.MEDIA_ROOT, 'results/%i' % self.id)
+        self.save()
+        os.makedirs(self.results_path)
 
     @transaction.atomic
     def run(self):
+        self.make_results_dir()
+
         args = Namespace()
-        args.g = os.path.abspath(self.fasta.name).encode()
-        args.o = self.output_prefix.encode()
+        args.g = os.path.abspath(os.path.join(settings.MEDIA_ROOT, self.fasta.name)).encode()
+        args.o = ''
         args.length = self.amplicon_length
         args.overlap = self.overlap
 
@@ -90,20 +90,26 @@ class Job(models.Model):
                     region.top_pair = primer_pair
                     region.save()
 
-        def generate_bed_file(self):
-            records = SeqIO.parse(
-                open(os.path.abspath(self.fasta.name), 'r'), 'fasta')
-            header = records[0].id
+    def generate_bed_file(self):
+        records = SeqIO.parse(
+            open(os.path.abspath(os.path.join(settings.MEDIA_ROOT, self.fasta.name)), 'r'), 'fasta')
+        header = list(records)[0].id
 
-            with open(os.path.join(self.results_path, output_prefix + '.bed')) as bedfile:
-                for r in self.region_set.all():
-                    pair = r.top_pair
-                    print >> bedfile, '\t'.join([
-                        header,
-                        pair.start,
-                        pair.end,
-                        pair.name
-                    ])
+        with open(os.path.join(self.results_path, self.output_prefix + '.bed'), 'w') as bedfile:
+            for r in self.region_set.all():
+                pair = r.top_pair
+                print >> bedfile, '\t'.join([
+                    header,
+                    str(pair.primer_left.start),
+                    str(pair.primer_left.end),
+                    str(pair.primer_left.name)
+                ])
+                print >> bedfile, '\t'.join([
+                    header,
+                    str(pair.primer_right.start),
+                    str(pair.primer_right.end),
+                    str(pair.primer_right.name)
+                ])
 
 
 class Region(models.Model):
