@@ -2,7 +2,7 @@
 
 Web frontend for primal - a work in progress...
 
-Try it out at  [link](http://primal.zibraproject.org)
+Try it out at  [link](http://primal.zibraproject.org "http://primal.zibraproject.org")
 
 # primal
 A primer3 wrapper for designing multiplex primer schemes
