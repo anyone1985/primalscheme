@@ -127,6 +127,6 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 try:
-    from .local import *
+    from .secret_key import *
 except ImportError:
     pass

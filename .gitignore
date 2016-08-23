@@ -5,3 +5,4 @@
 uploads/
 media/
 local.py
+secret_key.py
