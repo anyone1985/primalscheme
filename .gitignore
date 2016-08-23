@@ -4,3 +4,4 @@
 *.sqlite3
 uploads/
 media/
+local.py

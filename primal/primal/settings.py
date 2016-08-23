@@ -16,12 +16,6 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'u43irrw2uo!(&osyz)%o5=%andm0gnooc%g9cm-6ft5bak&)9n'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -133,3 +127,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+try:
+    from .local import *
+except ImportError:
+    pass
