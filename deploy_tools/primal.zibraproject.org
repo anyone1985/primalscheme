@@ -1,0 +1,12 @@
+server {
+    listen 80;
+    server_name primal.zibraproject.org;
+
+    location /static {
+        alias /home/ubuntu/sites/primal.zibraproject.org/static;
+    }
+
+    location / {
+        proxy_pass http://unix:/tmp/primal.zibraproject.org.socket;
+    }
+}

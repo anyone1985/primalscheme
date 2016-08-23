@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn server for primal.zibraproject.org
+After=network.target
+
+[Service]
+User=ubuntu
+ExecStart=/home/ubuntu/sites/primal.zibraproject.org/venv/bin/gunicorn --bind unix:/tmp/primal.zibraproject.org.socket --workers 4 --timeout 60 --error-logfile /var/log/gunicorn/error.log primal.wsgi:application
+ExecStop=/bin/true
+WorkingDirectory=/home/ubuntu/sites/primal.zibraproject.org/primal
+
+[Install]
+WantedBy=multi-user.target
