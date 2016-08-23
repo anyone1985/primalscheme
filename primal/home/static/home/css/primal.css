@@ -1,3 +1,27 @@
+/* --- FLEXBOX STICKY FOOTER --- */
+
+/**
+ * 1. Avoid the IE 10-11 `min-height` bug.
+ * 2. Set `flex-shrink` to `0` to prevent Chrome, Opera, and Safari from
+ *    letting these items shrink to smaller than their content's default
+ *    minimum size.
+ */
+.site-body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 1 */
+}
+.site-header,
+.site-footer {
+  flex-shrink: 0; /* 2 */
+}
+.site-content {
+  flex: 1 0 auto; /* 2 */
+}
+
+
+/* --- TYPOGRAPHY --- */
+
 body {
   font-family: 'Source Sans Pro', sans-serif;
 }
@@ -10,4 +34,17 @@ h1 {
 .navbar-brand {
   font-family: 'Rock Salt', cursive;
   color: #fff;
+}
+
+
+/* --- FOOTER --- */
+
+.site-footer {
+    background-color: #eee;
+    padding: 20px;
+    color: #aaa;
+}
+
+.site-footer p {
+    margin-bottom: 0;
 }
