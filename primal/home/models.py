@@ -19,7 +19,9 @@ class Job(models.Model):
         verbose_name='Scheme name')
     email = models.EmailField()
     # file will be saved to MEDIA_ROOT/uploads/2015/01/30
-    fasta = models.FileField(upload_to='uploads/%Y/%m/%d/')
+    fasta = models.FileField(
+        upload_to='uploads/%Y/%m/%d/',
+        help_text="One or more viral reference genomes in FASTA format")
     amplicon_length = models.PositiveSmallIntegerField(
         validators=[MaxValueValidator(4000)])
     overlap = models.PositiveSmallIntegerField(
