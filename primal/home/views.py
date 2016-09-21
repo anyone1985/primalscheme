@@ -16,7 +16,7 @@ def new_job(request):
             job = job_form.save()
             job.run()
             redirect_url = reverse('home:job_results',
-                                   kwargs={'job_id': str(job.id)})
+                                   kwargs={'job_uuid': str(job.uuid)})
             if request.is_ajax():
                 return JsonResponse({'redirect_url': redirect_url})
             else:
@@ -33,12 +33,12 @@ def new_job(request):
     return render(request, 'home/new_job.html', {'job_form': job_form})
 
 
-def job_results(request, job_id):
-    job = get_object_or_404(Job, pk=job_id)
+def job_results(request, job_uuid):
+    job = get_object_or_404(Job, uuid=job_uuid)
     return render(request, 'home/job_results.html', {'job': job})
 
 
-def job_results_csv(request, job_id):
+def job_results_csv(request, job_uuid):
 
     def format_row(region, primer):
         return [
@@ -52,7 +52,7 @@ def job_results_csv(request, job_id):
             str(primer.end)
         ]
 
-    job = get_object_or_404(Job, pk=job_id)
+    job = get_object_or_404(Job, uuid=job_uuid)
 
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')

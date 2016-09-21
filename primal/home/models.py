@@ -1,19 +1,20 @@
 from __future__ import unicode_literals
 
 import os
-from Bio import SeqIO
+import uuid
 
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator
 from django.db import transaction
 
-
-from primalscheme.scheme import multiplex
 from argparse import Namespace
+from Bio import SeqIO
+from primalscheme.scheme import multiplex
 
 
 class Job(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     name = models.CharField(
         max_length=100,
         verbose_name='Scheme name')
