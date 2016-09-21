@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from .forms import JobForm
 from .models import Job
+from .utils import messages_to_json
 
 
 def new_job(request):
@@ -20,6 +21,12 @@ def new_job(request):
                 return JsonResponse({'redirect_url': redirect_url})
             else:
                 return redirect(job)
+        else:
+            for nfe in job_form.non_field_errors():
+                messages.error(request, nfe)
+            json = messages_to_json(request)
+            json['errors'] = job_form.errors
+            return JsonResponse(json, status=400)
 
     else:
         job_form = JobForm(initial={'amplicon_length': 400, 'overlap': 75})

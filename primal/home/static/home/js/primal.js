@@ -36,15 +36,27 @@ $(function() {
         console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
         var json = JSON.parse(xhr.responseText);
         $('#progress_modal').modal('hide');
-        if ('messages' in json) {
+        if ('errors' in json) {
+          for (var error in json.errors) {
+            var id = '#id_' + error;
+            var parent = $(id).parents('.form-group');
+            parent.addClass('has-error');
+            if ($('.help-block', parent).length) {
+              $('.help-block', parent).text(json.errors[error]);
+            } else {
+              parent.append('<span class="help-block">' + json.errors[error] + '</span>');
+            }
+          }
+        }
+        if ('messages' in json && json.messages.length > 0) {
           $('#form_error_list').html('')
           var messages = json.messages;
           for (var i = 0; i < messages.length; i++) {
             var m = messages[i];
             $('#form_error_list').append('<li>' + m.message + '</li>');
           }
+          $('#errors_modal').modal('show');
         }
-        $('#errors_modal').modal('show');
       },
     });
   });
