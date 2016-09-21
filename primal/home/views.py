@@ -40,10 +40,11 @@ def job_results(request, job_id):
 
 def job_results_csv(request, job_id):
 
-    def format_row(primer):
+    def format_row(region, primer):
         return [
             primer.name,
             primer.sequence,
+            region.pool,
             str(primer.length),
             '{0:.2f}'.format(primer.tm),
             '{0:.2f}'.format(primer.gc),
@@ -58,13 +59,13 @@ def job_results_csv(request, job_id):
     response['Content-Disposition'] = 'attachment; filename="primers.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Primer Name', 'Sequence', 'Length', 'Tm', 'GC%',
+    writer.writerow(['Primer Name', 'Sequence', 'Pool', 'Length', 'Tm', 'GC%',
                      'Start', 'End'])
 
     for region in job.region_set.all():
-        l = region.top_pair.primer_left
-        r = region.top_pair.primer_right
-        writer.writerow(format_row(l))
-        writer.writerow(format_row(r))
+        left = region.top_pair.primer_left
+        right = region.top_pair.primer_right
+        writer.writerow(format_row(region, left))
+        writer.writerow(format_row(region, right))
 
     return response
