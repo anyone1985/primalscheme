@@ -1,6 +1,8 @@
 {% extends 'home/base.html' %}
 {% load bootstrap3 static %}
 
+{% block body_class %}new-job-body{% endblock %}
+
 {% block content %}
 
   <div class="container" id="scheme_generator">
@@ -8,9 +10,9 @@
     <div class="row">
 
       <div class="col-md-5">
-        <h1>Primal Scheme</h1>
         <div class="panel panel-default">
           <div class="panel-body">
+            <h1>Primal Scheme</h1>
             {% bootstrap_messages %}
             <form action="/" method="post" enctype="multipart/form-data" id="job_form">
               {% csrf_token %}
@@ -32,8 +34,12 @@
       </div>
 
       <div class="col-md-6 col-md-offset-1">
-        <h1>Readme</h1>
-        {% include 'home/includes/readme.html' %}
+        <div class="panel panel-default overlay-panel">
+          <div class="panel-body">
+            <h1><a href="#" data-toggle="collapse" data-target="#readme">Readme</a></h1>
+            <div id="readme" class="collapse">{% include 'home/includes/readme.html' %}</div>
+          </div>
+        </div>
       </div>
 
     </div>
