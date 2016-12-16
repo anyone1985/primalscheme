@@ -21,7 +21,7 @@
     {# Global stylesheets #}
     {% bootstrap_css %}
     <link href="https://fonts.googleapis.com/css?family=Rock+Salt|Source+Sans+Pro" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'home/css/primal.css' %}">
+    <link rel="stylesheet" href="{% static 'home/css/home.css' %}">
 
     {% block extra_css %}
       {# Override this in templates to add extra stylesheets #}
@@ -31,7 +31,7 @@
   <body class="site-body {% block body_class %}{% endblock %}">
 
     {% include 'home/includes/top_menu.html' %}
-   
+
     <main class="site-content clearfix">{% block content %}{% endblock %}</main>
 
     <footer class="site-footer">{% include 'home/includes/footer.html' %}</footer>
