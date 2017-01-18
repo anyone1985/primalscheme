@@ -12,6 +12,7 @@ class JobForm(ModelForm):
     class Meta:
         model = Job
         exclude = (
+            'prefix',
             'request_time',
             'run_start_time',
             'run_finish_time',

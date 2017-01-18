@@ -10,7 +10,7 @@ from django.db import transaction
 
 from argparse import Namespace
 from Bio import SeqIO
-from primalscheme.scheme import multiplex
+from primalrefactor.primal import multiplex
 
 
 class Job(models.Model):
@@ -27,42 +27,70 @@ class Job(models.Model):
         validators=[MaxValueValidator(4000)])
     overlap = models.PositiveSmallIntegerField(
         validators=[MaxValueValidator(200)])
+    prefix = models.CharField(max_length=100)
     request_time = models.DateTimeField(auto_now_add=True)
+    results_path = models.CharField(max_length=255, null=True)
     run_start_time = models.DateTimeField(null=True)
     run_finish_time = models.DateTimeField(null=True)
     run_duration = models.DurationField(null=True)
-    results_path = models.CharField(max_length=255, null=True)
 
-    def get_absolute_url(self):
+    @property
+    def sequences(self):
+        return SeqIO.to_dict(list(SeqIO.parse(self.fasta, 'fasta')))
+
+    @property
+    def diagram_path(self):
+        return os.path.join(self.results_path, '{}.png'.format(self.prefix))
+
+    @property
+    def bed_file_path(self):
+        return os.path.join(self.results_path, '{}.bed'.format(self.prefix))
+
+    @property
+    def results_url(self):
         from django.urls import reverse
         return reverse('home:job_results', kwargs={'job_id': str(self.id)})
 
+    @property
+    def results_absolute_path(self):
+        return os.path.join(settings.MEDIA_ROOT, self.results_path)
+
     def make_results_dir(self):
-        self.results_path = os.path.join(
-            settings.MEDIA_ROOT, 'results/%i' % self.id)
-        self.save()
-        os.makedirs(self.results_path)
+        if not os.path.exists(self.results_absolute_path):
+            os.makedirs(self.results_absolute_path)
+
+    def save(self):
+        # derive prefix from name
+        prefix = ''.join(c for c in self.name if c.isalpha() or c.isdigit())
+        self.prefix = prefix if len(prefix) < 11 else prefix[:11]
+        super(Job, self).save()
+
+        # create results dir after first save (need id)
+        if not self.results_path:
+            self.results_path = 'results/{}/{}'.format(str(self.id)[:1], self.id)  # relative to media root
+            self.save()
+            self.make_results_dir()
 
     @transaction.atomic
     def run(self):
-        self.make_results_dir()
-
         args = Namespace()
-        args.g = os.path.abspath(os.path.join(settings.MEDIA_ROOT, self.fasta.name)).encode()
-        args.o = ''
-        args.length = self.amplicon_length
+        args.f = os.path.abspath(os.path.join(settings.MEDIA_ROOT, self.fasta.name)).encode()
+        args.p = self.prefix
+        args.amplicon_length = self.amplicon_length
         args.overlap = self.overlap
+        args.output_path = self.results_absolute_path
+        args.v = False
+        args.vvv = False
 
         regions = multiplex(args)
 
         for r in regions:
             region = Region.objects.create(
                 job=self,
-                scheme=r.scheme,
-                region_number=r.region,
+                region_number=r.region_num,
                 pool=r.pool
             )
-            for i, pair in enumerate(r.pairs):
+            for i, pair in enumerate(r.candidate_pairs):
                 primer_left = Primer.objects.create(
                     direction='LEFT',
                     name=pair.left.name,
@@ -93,34 +121,12 @@ class Job(models.Model):
                     region.top_pair = primer_pair
                     region.save()
 
-    def generate_bed_file(self):
-        records = SeqIO.parse(
-            open(os.path.abspath(os.path.join(settings.MEDIA_ROOT, self.fasta.name)), 'r'), 'fasta')
-        header = list(records)[0].id
-
-        with open(os.path.join(self.results_path, self.output_prefix + '.bed'), 'w') as bedfile:
-            for r in self.region_set.all():
-                pair = r.top_pair
-                print >> bedfile, '\t'.join([
-                    header,
-                    str(pair.primer_left.start),
-                    str(pair.primer_left.end),
-                    str(pair.primer_left.name)
-                ])
-                print >> bedfile, '\t'.join([
-                    header,
-                    str(pair.primer_right.start),
-                    str(pair.primer_right.end),
-                    str(pair.primer_right.name)
-                ])
-
 
 class Region(models.Model):
     job = models.ForeignKey(
         'Job',
         on_delete=models.CASCADE,
     )
-    scheme = models.SmallIntegerField()
     region_number = models.SmallIntegerField()
     pool = models.SmallIntegerField()
     top_pair = models.ForeignKey(

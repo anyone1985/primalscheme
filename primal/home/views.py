@@ -15,8 +15,7 @@ def new_job(request):
         if job_form.is_valid():
             job = job_form.save()
             job.run()
-            redirect_url = reverse('home:job_results',
-                                   kwargs={'job_uuid': str(job.uuid)})
+            redirect_url = reverse('home:job_results', kwargs={'job_uuid': str(job.uuid)})
             if request.is_ajax():
                 return JsonResponse({'redirect_url': redirect_url})
             else:
