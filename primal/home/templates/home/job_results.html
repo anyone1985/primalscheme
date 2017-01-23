@@ -47,6 +47,8 @@
               <th>Left Primer Sequence</th>
               <th>Right Primer Name</th>
               <th>Right Primer Sequence</th>
+              <th>Product Length</th>
+              <th>Overlap</th>
             </tr>
             {% with job.region_set.all as regions %}
               {% for r in regions %}
@@ -57,6 +59,8 @@
                   <td>{{ r.top_pair.primer_left.sequence }}</td>
                   <td>{{ r.top_pair.primer_right.name }}</td>
                   <td>{{ r.top_pair.primer_right.sequence }}</td>
+                  <td>{{ r.top_pair.product_length }}</td>
+                  <td>{{ r.top_pair.overlap }}
                 </tr>
               {% endfor %}
             {% endwith %}

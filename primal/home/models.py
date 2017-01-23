@@ -141,6 +141,7 @@ class PrimerPair(models.Model):
     region = models.ForeignKey(
         'Region',
         on_delete=models.CASCADE,
+        related_name='primer_pairs'
     )
     primer_left = models.ForeignKey(
         'Primer',
@@ -153,6 +154,17 @@ class PrimerPair(models.Model):
         related_name='primer_pair_from_r'
     )
     total_score = models.FloatField()
+
+    @property
+    def overlap(self):
+        if self.region.region_number == 1:
+            return 0
+        prev_primer_pair = Region.objects.get(job=self.region.job, region_number=self.region.region_number-1).top_pair
+        return prev_primer_pair.primer_right.start - self.primer_left.start
+
+    @property
+    def product_length(self):
+		return self.primer_right.start - self.primer_left.start
 
     def delete(self, using=None):
         if self.primer_right:
@@ -171,3 +183,21 @@ class Primer(models.Model):
     sequence = models.CharField(max_length=50)
     gc = models.FloatField()
     tm = models.FloatField()
+
+"""
+class Alignment(models.Model):
+    primer = models.ForeignKey(
+        'Primer',
+        on_delete=models.CASCADE,
+    )
+    start = models.IntegerField()
+    end = models.IntegerField()
+    length = models.IntegerField()
+    score = models.IntegerField()
+    aln_query = models.CharField(max_length=50)
+    aln_ref = models.CharField(max_length=50)
+    aln_ref_comp = models.CharField(max_length=50)
+    template_3prime = models.CharField(max_length=50)
+    primer_3prime = models.CharField(max_length=50)
+    mm_3prime = models.BooleanField()
+"""
