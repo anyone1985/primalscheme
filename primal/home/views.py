@@ -4,17 +4,29 @@ from django.contrib import messages
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 
+from primalrefactor.primal import PoolOverlapException
+
 from .forms import JobForm
 from .models import Job
 from .utils import messages_to_json
-
 
 def new_job(request):
     if request.method == 'POST':
         job_form = JobForm(request.POST, request.FILES)
         if job_form.is_valid():
             job = job_form.save()
-            job.run()
+
+            try:
+                job.run()
+            except PoolOverlapException as e:
+                run_error_msg = e.message
+            except Exception as e:
+                run_error_msg = "An unexpected exception has occurred: {}".format(e.message)
+            if run_error_msg:
+                messages.error(request, run_error_msg)
+                json = messages_to_json(request)
+                return JsonResponse(json, status=500)
+
             redirect_url = reverse('home:job_results', kwargs={'job_uuid': str(job.uuid)})
             if request.is_ajax():
                 return JsonResponse({'redirect_url': redirect_url})
