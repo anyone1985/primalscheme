@@ -16,7 +16,7 @@
         <dl class="dl-horizontal">
           <dt>Job Name</dt><dd>{{ job.name }}</dd>
           <dt>Amplicon length</dt><dd>{{ job.amplicon_length }}</dd>
-          <dt>Trimmed Overlap</dt><dd>{{ job.trimmed_overlap }}</dd>
+          <dt>Overlap</dt><dd>{{ job.overlap }}</dd>
         </dl>
         <a href="{% url 'home:job_results_csv' job_uuid=job.uuid %}" class="btn btn-info">
           <i class="fa fa-download"></i> Download as CSV
@@ -48,7 +48,7 @@
               <th>Right Primer Name</th>
               <th>Right Primer Sequence</th>
               <th>Product Length</th>
-              <th>Overlap</th>
+              <th>Trimmed Overlap</th>
             </tr>
             {% with job.region_set.all as regions %}
               {% for r in regions %}
@@ -60,7 +60,7 @@
                   <td>{{ r.top_pair.primer_right.name }}</td>
                   <td>{{ r.top_pair.primer_right.sequence }}</td>
                   <td>{{ r.top_pair.product_length }}</td>
-                  <td>{{ r.top_pair.overlap }}
+                  <td>{{ r.top_pair.trimmed_overlap }}
                 </tr>
               {% endfor %}
             {% endwith %}
