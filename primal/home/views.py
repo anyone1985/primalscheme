@@ -18,6 +18,7 @@ def new_job(request):
 
             try:
                 job.run()
+                run_error_msg = None
             except PoolOverlapException as e:
                 run_error_msg = e.message
             except Exception as e:
