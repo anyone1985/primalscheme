@@ -156,11 +156,11 @@ class PrimerPair(models.Model):
     total_score = models.FloatField()
 
     @property
-    def overlap(self):
+    def trimmed_overlap(self):
         if self.region.region_number == 1:
             return 0
         prev_primer_pair = Region.objects.get(job=self.region.job, region_number=self.region.region_number-1).top_pair
-        return prev_primer_pair.primer_right.start - self.primer_left.start
+        return prev_primer_pair.primer_right.end - self.primer_left.end
 
     @property
     def product_length(self):
