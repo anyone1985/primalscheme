@@ -77,7 +77,8 @@ class Job(models.Model):
         args.f = os.path.abspath(os.path.join(settings.MEDIA_ROOT, self.fasta.name)).encode()
         args.p = self.prefix
         args.amplicon_length = self.amplicon_length
-        args.overlap = self.overlap
+        args.min_overlap = self.overlap
+        args.search_space = 40
         args.output_path = self.results_absolute_path
         args.v = False
         args.vvv = False
@@ -160,11 +161,11 @@ class PrimerPair(models.Model):
         if self.region.region_number == 1:
             return 0
         prev_primer_pair = Region.objects.get(job=self.region.job, region_number=self.region.region_number-1).top_pair
-        return prev_primer_pair.primer_right.end - self.primer_left.end
+        return prev_primer_pair.primer_right.end - self.primer_left.end - 1
 
     @property
     def product_length(self):
-		return self.primer_right.start - self.primer_left.start
+		return self.primer_right.start - self.primer_left.start + 1
 
     def delete(self, using=None):
         if self.primer_right:
