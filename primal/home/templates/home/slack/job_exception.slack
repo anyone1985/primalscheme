@@ -1,0 +1,5 @@
+{% extends django_slack %}
+
+{% block text %}
+:interrobang: {{ job.email }} got an exception: [{{ e.message }}]
+{% endblock %}

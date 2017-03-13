@@ -1,8 +1,11 @@
 import csv
+
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
+
+from django_slack import slack_message
 
 from primalrefactor.primal import PoolOverlapException
 
@@ -21,16 +24,29 @@ def new_job(request):
                 run_error_msg = None
             except PoolOverlapException as e:
                 run_error_msg = e.message
+                slack_message('home/slack/job_exception.slack', {
+                    'job': job,
+                    'e': e,
+                })
             except Exception as e:
                 run_error_msg = "An unexpected exception has occurred: {}".format(e.message)
+                slack_message('home/slack/job_exception.slack', {
+                    'job': job,
+                    'e': e,
+                })
             if run_error_msg:
                 messages.error(request, run_error_msg)
                 json = messages_to_json(request)
                 return JsonResponse(json, status=500)
 
-            redirect_url = reverse('home:job_results', kwargs={'job_uuid': str(job.uuid)})
+            redirect_path = reverse('home:job_results', kwargs={'job_uuid': str(job.uuid)})
+            slack_message('home/slack/job_complete.slack', {
+                'job': job,
+                'results_absolute_uri': request.build_absolute_uri(redirect_path),
+            })
+
             if request.is_ajax():
-                return JsonResponse({'redirect_url': redirect_url})
+                return JsonResponse({'redirect_url': redirect_path})
             else:
                 return redirect(job)
         else:

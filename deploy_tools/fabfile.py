@@ -12,6 +12,7 @@ def deploy():
     local_source_folder = '../primal'
     _get_latest_source(site_folder)
     _create_directory_structure(site_folder)
+    _copy_local_settings(local_source_folder, source_folder)
     _update_settings(source_folder, env.host)
     _update_virtualenv(site_folder)
     _update_static_files(source_folder)
@@ -25,6 +26,11 @@ def _create_directory_structure(site_folder):
         run('mkdir -p %s/%s' % (site_folder, subfolder))
 
 
+def _copy_local_settings(local_source_folder, source_folder):
+    put(local_source_folder + '/primal/settings_local.py',
+        source_folder + '/primal/settings_local.py')
+
+
 def _get_latest_source(site_folder):
     run('mkdir -p %s' % (site_folder,))
     if exists(site_folder + '/.git'):
@@ -35,6 +41,7 @@ def _get_latest_source(site_folder):
     run('cd %s && git reset --hard %s' % (site_folder, current_commit))
     run('cd %s && git submodule update --init' % (site_folder))
 
+
 def _update_settings(source_folder, site_name):
     settings_path = source_folder + '/primal/settings.py'
     sed(settings_path, "DEBUG = True", "DEBUG = False")
@@ -42,12 +49,6 @@ def _update_settings(source_folder, site_name):
         'ALLOWED_HOSTS =.+$',
         'ALLOWED_HOSTS = ["%s"]' % (site_name,)
     )
-    secret_key_file = source_folder + '/primal/secret_key.py'
-    if not exists(secret_key_file):  #3
-        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-        key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))
-        append(secret_key_file, "SECRET_KEY = '%s'" % (key,))
-    append(settings_path, '\nfrom .secret_key import SECRET_KEY')
 
 
 def _update_virtualenv(site_folder):

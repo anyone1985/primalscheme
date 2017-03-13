@@ -4,5 +4,6 @@
 *.sqlite3
 uploads/
 media/
+venv/
 local.py
-secret_key.py
+settings_local.py
