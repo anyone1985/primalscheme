@@ -1,0 +1,12 @@
+<h4>Guidelines for designing a scheme:</h4>
+<ol>
+  <li>Download complete genomes from GenBank and put into a single FASTA file</li>
+  <li>Align all sequences using <a href="https://www.ebi.ac.uk/Tools/msa/clustalo/">Clustal Omega</a></li>
+  <li>Check start and ends of the alignment and remove any sequences that are not full length</li>
+  <li>Click the 'Phylogenetic Tree' tab to see how many major clades there are</li>
+  <li>Click the 'Result Summary' tab then 'Percent Identity Matrix' link to see the identity matrix of all sequences</li>
+  <li>Check that the maximum sequence divergence is not more than 10%, it may be necessary to group the more similar genomes and make separate schemes for them</li>
+  <li>Remove duplicate or sequences with >99% identity to other genomes in the file as these will bias the primer selection</li>
+  <li>Ensure the first genome in the file is the most recent, complete genome for a given geographical region/lineage</li>
+  <li>Run primal scheme on the FASTA file</li>
+</ol>
