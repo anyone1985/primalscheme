@@ -57,7 +57,7 @@ def new_job(request):
             return JsonResponse(json, status=400)
 
     else:
-        job_form = JobForm(initial={'amplicon_length': 400, 'overlap': 75})
+        job_form = JobForm(initial={'amplicon_length': 400, 'overlap': 50})
     return render(request, 'home/new_job.html', {'job_form': job_form})
 
 
