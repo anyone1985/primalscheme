@@ -82,6 +82,7 @@ class Job(models.Model):
         args.output_path = self.results_absolute_path
         args.v = False
         args.vvv = False
+        args.max_candidates = 5
 
         regions = multiplex(args)
 
