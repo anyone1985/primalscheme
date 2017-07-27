@@ -10,7 +10,23 @@ from django.db import transaction
 
 from argparse import Namespace
 from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio.Emboss.Applications import FDNADistCommandline
 from primalrefactor.primal import multiplex
+
+
+class Reference(models.Model):
+    job = models.ForeignKey(
+        'Job',
+        on_delete=models.CASCADE,
+    )
+    header = models.CharField(max_length=255);
+    sequence = models.TextField();
+
+    @property
+    def seq_record(self):
+        return SeqRecord(Seq(self.sequence), id=self.header)
 
 
 class Job(models.Model):
@@ -33,6 +49,13 @@ class Job(models.Model):
     run_start_time = models.DateTimeField(null=True)
     run_finish_time = models.DateTimeField(null=True)
     run_duration = models.DurationField(null=True)
+    primary_reference = models.OneToOneField(
+        Reference,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        blank=True,
+        null=True,
+    )
 
     @property
     def sequences(self):
@@ -65,16 +88,26 @@ class Job(models.Model):
         self.prefix = prefix if len(prefix) < 11 else prefix[:11]
         super(Job, self).save()
 
-        # create results dir after first save (need id)
+        # After initial save
         if not self.results_path:
             self.results_path = 'results/{}/{}'.format(str(self.id)[:1], self.id)  # relative to media root
+
+            references = list(SeqIO.parse(self.fasta, 'fasta'))
+            for r in references:
+                ref = Reference.objects.create(job=self, header=r.id, sequence=r.seq)
+                ref.save()
+                if not self.primary_reference:
+                    self.primary_reference = ref
+
             self.save()
             self.make_results_dir()
+
+
 
     @transaction.atomic
     def run(self):
         args = Namespace()
-        args.f = os.path.abspath(os.path.join(settings.MEDIA_ROOT, self.fasta.name)).encode()
+        args.references = [r.seq_record for r in self.reference_set.all()]
         args.p = self.prefix
         args.amplicon_length = self.amplicon_length
         args.min_overlap = self.overlap

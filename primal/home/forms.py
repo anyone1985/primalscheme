@@ -17,15 +17,15 @@ class JobForm(ModelForm):
             'run_start_time',
             'run_finish_time',
             'run_duration',
-            'results_path')
+            'results_path',
+            'primary_reference')
 
     def clean(self):
         cleaned_data = super(JobForm, self).clean()
         fasta = cleaned_data['fasta']
         non_field_errors = []
         alphabet = AlphabetEncoder(IUPAC.unambiguous_dna, 'N')
-        references = list(SeqIO.parse(cleaned_data['fasta'], 'fasta',
-                                      alphabet=alphabet))
+        references = list(SeqIO.parse(fasta, 'fasta', alphabet=alphabet))
 
         if not references:
             e = ValidationError(
