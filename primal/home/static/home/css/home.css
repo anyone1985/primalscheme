@@ -36,6 +36,15 @@ h1 {
   color: #fff;
 }
 
+.citation-info {
+  color: #fff;
+}
+
+.citation-info a {
+  color: #fff;
+  text-decoration: underline;
+}
+
 
 /* --- FOOTER --- */
 
