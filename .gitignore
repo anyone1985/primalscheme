@@ -4,6 +4,7 @@
 *.sqlite3
 uploads/
 media/
+static/
 venv/
 local.py
 settings_local.py
