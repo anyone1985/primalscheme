@@ -7,3 +7,4 @@ numpy==1.11.1
 primer3-py==0.5.1
 reportlab==3.3.0
 django-slack==5.8.0
+django-pipeline==1.6.13

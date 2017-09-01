@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'home',
     'django_slack',
+    'pipeline',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -115,9 +116,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
 ]
 
 STATICFILES_DIRS = []
@@ -127,6 +131,17 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+PIPELINE = {
+    'STYLESHEETS': {
+        'primal_home': {
+            'source_filenames': (
+              'home/css/home.css',
+            ),
+            'output_filename': 'css/primal_home.min.css',
+        },
+    },
+}
 
 
 LOGGING = {
