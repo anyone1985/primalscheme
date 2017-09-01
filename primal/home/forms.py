@@ -39,16 +39,16 @@ class JobForm(ModelForm):
         primary_ref = references[0]
         primary_ref_len = len(primary_ref)
 
-        if any(abs(len(r) - primary_ref_len) > 200 for r in references):
+        if any(abs(len(r) - primary_ref_len) > 500 for r in references):
             e = ValidationError(
                 "One or more of your references is too different in length to "
-                "the primary (first) reference. The maximum difference is 200 nt",
+                "the primary (first) reference. The maximum difference is 500 nt",
                 code='invalid')
             non_field_errors.append(e)
 
-        if not 1 <= len(references) <= 10:
+        if not 1 <= len(references) <= 100:
             e = ValidationError(
-                "Between 1 and 10 reference genomes are required in your fasta file. "
+                "Between 1 and 100 reference genomes are required in your fasta file. "
                 "We recommend selecting a candidate reference from each lineage "
                 "of interest, rather than many similar references.", code='invalid')
             non_field_errors.append(e)
